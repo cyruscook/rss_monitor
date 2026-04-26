@@ -1,0 +1,9 @@
+.venv/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+build/
+deploy/.terraform/
+deploy/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*

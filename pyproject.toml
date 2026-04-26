@@ -1,0 +1,24 @@
+[project]
+name = "rss-monitor"
+version = "0.1.0"
+description = "AWS Lambda RSS feed monitor"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aws-lambda-powertools>=3.28.0",
+    "boto3>=1.42.96",
+    "feedparser>=6.0.12",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.12",
+    "ty>=0.0.32",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ty.environment]
+python = "./.venv"
