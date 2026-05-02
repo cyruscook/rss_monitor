@@ -63,15 +63,17 @@ class FeedRepository:
             ":last_checked": checked_at,
             ":last_item": last_item or "",
         }
+        update_kwargs: dict[str, Any] = {
+            "Key": {"feed_url": feed_url},
+            "UpdateExpression": update_expression,
+            "ExpressionAttributeValues": expression_attribute_values,
+        }
         if name is not None:
-            update_expression += ", name = :name"
+            update_kwargs["UpdateExpression"] += ", #name = :name"
+            update_kwargs["ExpressionAttributeNames"] = {"#name": "name"}
             expression_attribute_values[":name"] = name
 
-        self.table.update_item(
-            Key={"feed_url": feed_url},
-            UpdateExpression=update_expression,
-            ExpressionAttributeValues=expression_attribute_values,
-        )
+        self.table.update_item(**update_kwargs)
 
 
 def feed_from_item(item: dict[str, Any]) -> Feed:
