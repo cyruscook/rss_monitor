@@ -1,14 +1,17 @@
-from rss_monitor.repository import FeedRepository
 from base64 import b64decode
 from html import escape
-from typing import Any, Protocol
+from typing import Any
 from urllib.parse import parse_qs, urlparse
 
-import feedparser
+from aws_lambda_powertools import Logger
 from aws_lambda_powertools.utilities.data_classes import LambdaFunctionUrlEvent
 
-from rss_monitor.feed_checker import USER_AGENT, fetch_feed_title
+from rss_monitor.feed_checker import fetch_feed_title
+from rss_monitor.repository import FeedRepository
 from rss_monitor.models import Feed
+
+
+logger = Logger()
 
 
 def handle_url_event(
@@ -43,6 +46,10 @@ def handle_post(
     try:
         name = fetch_feed_title(feed_url)
     except ValueError as exc:
+        logger.exception(
+            "Failed to subscribe to feed",
+            extra={"feed_url": feed_url},
+        )
         return create_reponse(render_page(repository, str(exc)), 400)
     repository.put_feed(feed_url, name)
     return create_reponse(render_page(repository, None), 201)

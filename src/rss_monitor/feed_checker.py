@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import feedparser
+from feedparser.exceptions import CharacterEncodingOverride
 
 from rss_monitor.models import Feed, NewItem
 from rss_monitor.time_utils import utc_now
@@ -14,10 +15,7 @@ def find_new_items(
     feed: Feed, clock_skew_seconds: int
 ) -> tuple[list[NewItem], str, datetime, str]:
     parsed = feedparser.parse(feed.feed_url, agent=USER_AGENT)
-    bozo_exception = getattr(parsed, "bozo_exception", None)
-    if bozo_exception is not None:
-        raise RuntimeError(str(bozo_exception))
-
+    check_bozo_exception(parsed)
     feed_name = entry_text(getattr(parsed, "feed", None), "title") or feed.name
     threshold = feed.last_checked - timedelta(seconds=clock_skew_seconds)
     items: list[NewItem] = []
@@ -50,9 +48,7 @@ def find_new_items(
 
 def fetch_feed_title(feed_url: str) -> str:
     parsed = feedparser.parse(feed_url, agent=USER_AGENT)
-    bozo_exception = getattr(parsed, "bozo_exception", None)
-    if bozo_exception is not None:
-        raise ValueError("The RSS feed could not be parsed.")
+    check_bozo_exception(parsed)
     feed = getattr(parsed, "feed", None)
     title = entry_text(feed, "title")
     if title is None:
@@ -74,3 +70,10 @@ def entry_text(entry: Any, key: str) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+def check_bozo_exception(parsed_feed: Any) -> None:
+    bozo_exception = getattr(parsed_feed, "bozo_exception", None)
+    if bozo_exception is not None and not isinstance(
+        bozo_exception, CharacterEncodingOverride
+    ):
+        raise ValueError("The RSS feed could not be parsed.") from bozo_exception
