@@ -8,7 +8,7 @@ IMAGE_ARCH ?= linux/arm64
 check: format typecheck terraform-fmt terraform-validate
 
 format:
-	uv run ruff format src
+	uv run ruff format --check src
 
 typecheck:
 	uv run ty check src
