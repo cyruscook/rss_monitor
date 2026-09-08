@@ -67,6 +67,7 @@ class FeedRepository:
             "Key": {"feed_url": feed_url},
             "UpdateExpression": update_expression,
             "ExpressionAttributeValues": expression_attribute_values,
+            "ConditionExpression": "attribute_exists(feed_url)",
         }
         if name is not None:
             update_kwargs["UpdateExpression"] += ", #name = :name"

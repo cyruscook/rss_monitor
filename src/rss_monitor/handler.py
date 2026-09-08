@@ -10,6 +10,7 @@ from aws_lambda_powertools.utilities.data_classes import (
     SQSEvent,
 )
 from aws_lambda_powertools.utilities.typing import LambdaContext
+from botocore.exceptions import ClientError
 
 from rss_monitor.feed_checker import find_new_items
 from rss_monitor.html import handle_url_event
@@ -101,12 +102,22 @@ def process_feed(
     )
     for item in new_items:
         notifier.publish_new_item(item)
-    repository.update_after_check(
-        feed_url,
-        format_iso_datetime(checked_at),
-        last_item,
-        current_name if current_name != feed.name else None,
-    )
+    try:
+        repository.update_after_check(
+            feed_url,
+            format_iso_datetime(checked_at),
+            last_item,
+            current_name if current_name != feed.name else None,
+        )
+    except ClientError as exc:
+        error = exc.response.get("Error", {})
+        if error.get("Code") != "ConditionalCheckFailedException":
+            raise
+        logger.info(
+            "Feed was unsubscribed during processing",
+            extra={"feed_url": feed_url},
+        )
+        return
     logger.info(
         "Processed feed",
         extra={"feed_url": feed_url, "new_items": str(new_items)},
