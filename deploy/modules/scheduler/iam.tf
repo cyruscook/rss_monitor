@@ -1,3 +1,7 @@
+data "aws_service_principal" "scheduler" {
+  service_name = "scheduler"
+}
+
 resource "aws_iam_role" "scheduler_invoke_lambda" {
   name               = "${var.name_prefix}-invoke-lambda"
   assume_role_policy = data.aws_iam_policy_document.scheduler_assume_role.json
@@ -9,7 +13,7 @@ data "aws_iam_policy_document" "scheduler_assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = ["scheduler.amazonaws.com"]
+      identifiers = [data.aws_service_principal.scheduler.name]
     }
   }
 }

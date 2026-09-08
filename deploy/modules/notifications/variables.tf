@@ -1,5 +1,6 @@
 variable "name_prefix" {
-  type = string
+  type     = string
+  nullable = false
 }
 
 variable "subscriptions" {
@@ -7,4 +8,5 @@ variable "subscriptions" {
     protocol : string
     endpoint : string
   }))
+  nullable = false
 }

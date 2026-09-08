@@ -1,11 +1,14 @@
 variable "name_prefix" {
-  type = string
+  type     = string
+  nullable = false
 }
 
 variable "lambda_function_arn" {
-  type = string
+  type     = string
+  nullable = false
 }
 
 variable "schedule_expression" {
-  type = string
+  type     = string
+  nullable = false
 }

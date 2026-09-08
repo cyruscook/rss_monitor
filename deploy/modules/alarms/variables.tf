@@ -1,15 +1,19 @@
 variable "name_prefix" {
-  type = string
+  type     = string
+  nullable = false
 }
 
 variable "dlq_name" {
-  type = string
+  type     = string
+  nullable = false
 }
 
 variable "lambda_function_name" {
-  type = string
+  type     = string
+  nullable = false
 }
 
 variable "topic_arn" {
-  type = string
+  type     = string
+  nullable = false
 }

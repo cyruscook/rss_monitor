@@ -1,7 +1,9 @@
 variable "name_prefix" {
-  type = string
+  type     = string
+  nullable = false
 }
 
 variable "visibility_timeout" {
-  type = number
+  type     = number
+  nullable = false
 }

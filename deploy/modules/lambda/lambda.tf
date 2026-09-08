@@ -55,6 +55,6 @@ resource "aws_lambda_permission" "scheduler_invoke_lambda" {
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda_function.function_name
-  principal     = "scheduler.amazonaws.com"
-  source_arn    = "arn:aws:scheduler:${local.region}:${local.account_id}:schedule/*"
+  principal     = data.aws_service_principal.scheduler.name
+  source_arn    = "arn:${data.aws_partition.current.partition}:scheduler:${local.region}:${local.account_id}:schedule/*"
 }

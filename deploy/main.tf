@@ -24,8 +24,7 @@ module "processing_queue" {
 module "registry" {
   source = "./modules/registry"
 
-  name_prefix = "${var.project_name}-reg"
-  image_name  = local.lambda_image_name
+  image_name = local.lambda_image_name
 }
 
 module "lambda" {
