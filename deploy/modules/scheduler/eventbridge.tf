@@ -10,5 +10,9 @@ resource "aws_scheduler_schedule" "schedule" {
   target {
     arn      = var.lambda_function_arn
     role_arn = aws_iam_role.scheduler_invoke_lambda.arn
+    input = jsonencode({
+      "detail-type" = "Scheduled Event"
+      source        = "aws.scheduler"
+    })
   }
 }
