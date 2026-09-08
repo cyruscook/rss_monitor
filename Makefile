@@ -3,9 +3,9 @@ IMAGE_NAME ?= rss-monitor
 IMAGE_TAG ?= latest
 IMAGE_ARCH ?= linux/arm64
 
-.PHONY: check format typecheck terraform-fmt terraform-validate terraform-init terraform-apply docker-push clean
+.PHONY: check format typecheck terraform-fmt terraform-validate terraform-init terraform-apply tflint docker-push clean
 
-check: format typecheck terraform-fmt terraform-validate
+check: format typecheck terraform-fmt terraform-validate tflint
 
 format:
 	uv run ruff format --check src
@@ -19,6 +19,10 @@ terraform-fmt:
 terraform-validate:
 	terraform -chdir=deploy init -backend=false
 	terraform -chdir=deploy validate
+
+tflint:
+	tflint --init --config "$(CURDIR)/.tflint.hcl"
+	tflint --recursive --config "$(CURDIR)/.tflint.hcl"
 
 terraform-init:
 	terraform -chdir=deploy init -backend-config=s3.tfbackend -var-file=secrets.tfvars
