@@ -71,6 +71,7 @@ def entry_text(entry: Any, key: str) -> str | None:
     text = str(value).strip()
     return text or None
 
+
 def check_bozo_exception(parsed_feed: Any) -> None:
     bozo_exception = getattr(parsed_feed, "bozo_exception", None)
     if bozo_exception is not None and not isinstance(
