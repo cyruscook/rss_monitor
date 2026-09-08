@@ -15,6 +15,9 @@ class Notifier:
         safe_title = BAD_CHARACTERS_RE.sub("", item.title)
         safe_link = BAD_CHARACTERS_RE.sub("", item.link)
         safe_feed_url = BAD_CHARACTERS_RE.sub("", item.feed_url)
+        subject = " ".join(
+            BAD_CHARACTERS_RE.sub("", f"New RSS item: {item.feed_name}").split()
+        )[:100]
         message = (
             f"New RSS item in {safe_feed_name}\n\n"
             f"Title: {safe_title}\n"
@@ -25,6 +28,6 @@ class Notifier:
         publish = getattr(self.sns, "publish")
         publish(
             TopicArn=self.topic_arn,
-            Subject=f"New RSS item: {safe_feed_name}",
+            Subject=subject,
             Message=message,
         )
